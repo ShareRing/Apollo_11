@@ -128,14 +128,14 @@ $ %s tx %s edit-metadata crypto-kitties d04b98f48e8f8bcc15c6ae5ac050801cd6dcfd42
 // GetCmdEditNFTDigitalHash is the CLI command for sending an EditMetadata transaction
 func GetCmdEditNFTDigitalHash(cdc *codec.Codec) *cobra.Command {
 	cmd := &cobra.Command{
-		Use:   "edit-digitalhash [denom] [tokenID]",
+		Use:   "edit-digital-hash [denom] [tokenID]",
 		Short: "edit the digital hash of an NFT",
 		Long: strings.TrimSpace(
 			fmt.Sprintf(`Edit the digital hash of an NFT from a given collection that has a 
 			specific id (SHA-256 hex hash).
 
 Example:
-$ %s tx %s edit-digitalhash crypto-kitties d04b98f48e8f8bcc15c6ae5ac050801cd6dcfd428fb5f9e65c4e16e7807340fa \
+$ %s tx %s edit-digital-hash crypto-kitties d04b98f48e8f8bcc15c6ae5ac050801cd6dcfd428fb5f9e65c4e16e7807340fa \
 --digital-hash path_to_token_digitalhash_JSON --from mykey
 `,
 				version.ClientName, types.ModuleName,
@@ -156,7 +156,7 @@ $ %s tx %s edit-digitalhash crypto-kitties d04b98f48e8f8bcc15c6ae5ac050801cd6dcf
 		},
 	}
 
-	cmd.Flags().String(flagDigitalHash, "", "Extra properties available for querying")
+	cmd.Flags().String(flagDigitalHash, "", "unique digital hash from token")
 
 	return cmd
 }

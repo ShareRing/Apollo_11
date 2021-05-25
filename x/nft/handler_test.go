@@ -19,7 +19,6 @@ const (
 	recipient          = "recipient"
 	tokenURI           = "token-uri"
 	digitalHash        = "digital-hash"
-	tokenByDigitalHash = "nft-digital-hash"
 )
 
 func TestInvalidMsg(t *testing.T) {

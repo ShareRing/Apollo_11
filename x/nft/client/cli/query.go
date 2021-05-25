@@ -254,14 +254,14 @@ $ %s query %s token crypto-kitties d04b98f48e8f8bcc15c6ae5ac050801cd6dcfd428fb5f
 // GetCmdQueryNFT queries a single NFTs from a collection
 func GetCmdQueryNFTByDigitalHash(queryRoute string, cdc *codec.Codec) *cobra.Command {
 	cmd := &cobra.Command{
-		Use:   "token-by-DigitalHash [digitalHash] [denom]",
+		Use:   "token-by-digital-hash [digital-hash] [denom]",
 		Short: "query a single NFT from a collections by DigitalHash",
 		Long: strings.TrimSpace(
 			fmt.Sprintf(`Get an NFT from a selected collection or (if not selected) from all collections.
 
 Example:
-$ %s query %s token-by-DigitalHash some_hash_string
-$ %s query %s token-by-DigitalHash some_hash_string --denom crypto-kitties
+$ %s query %s token-by-digital-hash some_hash_string
+$ %s query %s token-by-digital-hash some_hash_string --denom crypto-kitties
 `, version.ClientName, types.ModuleName, version.ClientName, types.ModuleName,
 			),
 		),
