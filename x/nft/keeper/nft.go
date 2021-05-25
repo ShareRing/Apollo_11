@@ -29,26 +29,25 @@ func (k Keeper) GetNFT(ctx sdk.Context, denom, id string) (nft exported.NFT, err
 	return nft, err
 }
 
-func (k Keeper) GetNFTByDigitalHash(ctx sdk.Context, denoms []string, digitalHash string) (nft exported.NFT, err error) { //todo
-	tokenID := k.GetDigitalHashKVStoreValue(ctx, digitalHash)
-	if tokenID == "" {
+func (k Keeper) GetNFTByDigitalHash(ctx sdk.Context, digitalHash string) (nft *types.ExtraBaseNFT, err error) {
+	nftLink, found := k.GetDigitalHashKVStoreValue(ctx, digitalHash)
+	if !found {
 		return nil, sdkerrors.Wrap(types.ErrUnknownCollection, fmt.Sprintf("no one linked token with this DigitalHash %s", digitalHash))
 	}
 
-	for _, denom := range denoms {
-		collection, found := k.GetCollection(ctx, denom)
-		if !found {
-			continue
-		}
-		nft, err = collection.GetNFT(tokenID)
-
-		if err != nil {
-			continue
-		}
-		return nft, nil
+	collection, found := k.GetCollection(ctx, nftLink.Denom)
+	if !found {
+		return nil, sdkerrors.Wrap(types.ErrUnknownCollection, fmt.Sprintf("dont found any collection by Denom %s", nftLink.Denom))
 	}
 
-	return nil, sdkerrors.Wrap(types.ErrUnknownCollection, fmt.Sprintf("DigitalHash %s not found of any of denom %s", digitalHash, denoms))
+	basenft, err := collection.GetNFT(nftLink.TokenID)
+	nft = types.NewExtraBaseNFT(basenft.GetID(), basenft.GetOwner(), basenft.GetTokenURI(), basenft.GetDigitalHash(), nftLink.Denom)
+	if err != nil {
+		return nil, err
+	}
+
+	return nft, nil
+
 }
 
 // UpdateNFT updates an already existing NFTs
@@ -129,11 +128,11 @@ func (k Keeper) MintNFT(ctx sdk.Context, denom string, nft exported.NFT) (err er
 
 	tokenID := nft.GetID()
 	if tokenURI != "" {
-		k.SetURIKVstoreValue(ctx, tokenURI, tokenID)
+		k.SetURIKVstoreValue(ctx, tokenURI, tokenID, denom)
 	}
 
 	if digitalHash != "" {
-		k.SetDigitalHashKVStoreValue(ctx, digitalHash, tokenID)
+		k.SetDigitalHashKVStoreValue(ctx, digitalHash, tokenID, denom)
 	}
 
 	ownerIDCollection, _ := k.GetOwnerByDenom(ctx, nft.GetOwner(), denom)

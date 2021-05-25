@@ -54,14 +54,12 @@ func NewQueryNFTParams(denom, id string) QueryNFTParams {
 
 // QueryNFTsByDigitalHashParams params for query 'custom/nfts/nftByDigitalHash
 type QueryNFTsByDigitalHashParams struct {
-	Denom       []string
 	DigitalHash string
 }
 
 // NewQueryNFTsByDigitalHashParams create a new instance of QueryNFTsByDigitalHashParams
-func NewQueryNFTsByDigitalHashParams(denom []string, digitalHash string) QueryNFTsByDigitalHashParams {
+func NewQueryNFTsByDigitalHashParams(digitalHash string) QueryNFTsByDigitalHashParams {
 	return QueryNFTsByDigitalHashParams{
-		Denom:       denom,
 		DigitalHash: digitalHash,
 	}
 }

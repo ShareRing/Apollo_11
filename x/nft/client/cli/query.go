@@ -6,7 +6,6 @@ import (
 	"github.com/cosmos/cosmos-sdk/client/context"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/version"
-	"github.com/spf13/viper"
 	"strings"
 
 	"github.com/spf13/cobra"
@@ -253,16 +252,15 @@ $ %s query %s token crypto-kitties d04b98f48e8f8bcc15c6ae5ac050801cd6dcfd428fb5f
 
 // GetCmdQueryNFT queries a single NFTs from a collection
 func GetCmdQueryNFTByDigitalHash(queryRoute string, cdc *codec.Codec) *cobra.Command {
-	cmd := &cobra.Command{
-		Use:   "token-by-digital-hash [digital-hash] [denom]",
+	return &cobra.Command{
+		Use:   "token-by-digital-hash [digital-hash]",
 		Short: "query a single NFT from a collections by DigitalHash",
 		Long: strings.TrimSpace(
-			fmt.Sprintf(`Get an NFT from a selected collection or (if not selected) from all collections.
+			fmt.Sprintf(`Get an NFT from all collections.
 
 Example:
 $ %s query %s token-by-digital-hash some_hash_string
-$ %s query %s token-by-digital-hash some_hash_string --denom crypto-kitties
-`, version.ClientName, types.ModuleName, version.ClientName, types.ModuleName,
+`, version.ClientName, types.ModuleName,
 			),
 		),
 		Args: cobra.ExactArgs(1),
@@ -270,14 +268,8 @@ $ %s query %s token-by-digital-hash some_hash_string --denom crypto-kitties
 			cliCtx := context.NewCLIContext().WithCodec(cdc)
 
 			digitalHash := args[0]
-			denom := viper.GetString(flagSelectedDenom)
 
-			denoms := []string{}
-			if denom != "" {
-				denoms = append(denoms, denom)
-			}
-
-			params := types.NewQueryNFTsByDigitalHashParams(denoms, digitalHash)
+			params := types.NewQueryNFTsByDigitalHashParams(digitalHash)
 			bz, err := cdc.MarshalJSON(params)
 			if err != nil {
 				return err
@@ -288,7 +280,7 @@ $ %s query %s token-by-digital-hash some_hash_string --denom crypto-kitties
 				return err
 			}
 
-			var out exported.NFT
+			var out types.ExtraBaseNFT
 			err = cdc.UnmarshalJSON(res, &out)
 			if err != nil {
 				return err
@@ -297,8 +289,4 @@ $ %s query %s token-by-digital-hash some_hash_string --denom crypto-kitties
 			return cliCtx.PrintOutput(out)
 		},
 	}
-
-	cmd.Flags().String(flagSelectedDenom, "", "denom for searching by digital hasn in select collection")
-
-	return cmd
 }

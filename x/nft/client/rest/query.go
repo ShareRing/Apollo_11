@@ -47,10 +47,7 @@ func registerQueryRoutes(cliCtx context.CLIContext, r *mux.Router, cdc *codec.Co
 	r.HandleFunc(
 		"/nft/collection/nftByDigitalHash/{digital-hash}", getNFTbyDigitalHash(cdc, cliCtx, queryRoute),
 	).Methods("GET")
-	
-	r.HandleFunc(
-		"/nft/collection/nftByDigitalHash/{digital-hash}/{denom}", getNFTbyDigitalHashInDenom(cdc, cliCtx, queryRoute),
-	).Methods("GET")
+
 }
 
 func getSupply(cdc *codec.Codec, cliCtx context.CLIContext, queryRoute string) http.HandlerFunc {
@@ -187,7 +184,7 @@ func getNFTbyDigitalHash(cdc *codec.Codec, cliCtx context.CLIContext, queryRoute
 		vars := mux.Vars(r)
 		digitalHash := vars["digital-hash"]
 
-		params := types.NewQueryNFTsByDigitalHashParams([]string{}, digitalHash)
+		params := types.NewQueryNFTsByDigitalHashParams(digitalHash)
 		bz, err := cdc.MarshalJSON(params)
 		if err != nil {
 			rest.WriteErrorResponse(w, http.StatusBadRequest, err.Error())
@@ -203,27 +200,3 @@ func getNFTbyDigitalHash(cdc *codec.Codec, cliCtx context.CLIContext, queryRoute
 		rest.PostProcessResponse(w, cliCtx, res)
 	}
 }
-
-func getNFTbyDigitalHashInDenom(cdc *codec.Codec, cliCtx context.CLIContext, queryRoute string) http.HandlerFunc {
-	return func(w http.ResponseWriter, r *http.Request) {
-		vars := mux.Vars(r)
-		digitalHash := vars["digital-hash"]
-		denom := vars["denom"]
-
-		params := types.NewQueryNFTsByDigitalHashParams([]string{denom}, digitalHash)
-		bz, err := cdc.MarshalJSON(params)
-		if err != nil {
-			rest.WriteErrorResponse(w, http.StatusBadRequest, err.Error())
-			return
-		}
-
-		res, _, err := cliCtx.QueryWithData(fmt.Sprintf("custom/%s/nftByDigitalHash", queryRoute), bz)
-		if err != nil {
-			rest.WriteErrorResponse(w, http.StatusInternalServerError, err.Error())
-			return
-		}
-
-		rest.PostProcessResponse(w, cliCtx, res)
-	}
-}
-

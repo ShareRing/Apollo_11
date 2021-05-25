@@ -165,12 +165,8 @@ func queryNFTByDigitalHash(ctx sdk.Context, path []string, req abci.RequestQuery
 	if err != nil {
 		return nil, sdkerrors.Wrap(sdkerrors.ErrUnknownRequest, err.Error())
 	}
-
-	if len(params.Denom) == 0 {
-		params.Denom = k.GetDenoms(ctx)
-	}
-
-	nft, err := k.GetNFTByDigitalHash(ctx, params.Denom, params.DigitalHash)
+	
+	nft, err := k.GetNFTByDigitalHash(ctx, params.DigitalHash)
 	if err != nil {
 		return nil, sdkerrors.Wrap(types.ErrWrongDigitalHash, fmt.Sprintf("invalid DigitalHash #%s", params.DigitalHash))
 	}

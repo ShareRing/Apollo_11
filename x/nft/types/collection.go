@@ -40,18 +40,6 @@ func (collection Collection) GetNFT(id string) (nft exported.NFT, err error) {
 	)
 }
 
-func (collection Collection) GetNFTByDigitalHash(digitalHash string) (nft exported.NFT, err error) {
-	var gotDigitalHash string
-	for _, nft := range collection.NFTs {
-		gotDigitalHash = nft.GetDigitalHash()
-		if gotDigitalHash == digitalHash && gotDigitalHash != "" {
-			return nft, nil
-		}
-	}
-
-	return nil, nil
-}
-
 // ContainsNFT returns whether or not a Collection contains an NFT
 func (collection Collection) ContainsNFT(id string) bool {
 	_, err := collection.GetNFT(id)
@@ -111,9 +99,6 @@ NFTs:
 		collection.NFTs.String(),
 	)
 }
-
-// ----------------------------------------------------------------------------
-// Collections
 
 // Collections define an array of Collection
 type Collections []Collection

@@ -69,8 +69,30 @@ DigitalHash:	%s`,
 	)
 }
 
-// ----------------------------------------------------------------------------
-// NFT
+// ExtraBaseNFT for return extra info about nft
+type ExtraBaseNFT struct {
+	Denom string `json:"denom" yaml:"denom"`
+	BaseNFT
+}
+
+// NewExtraBaseNFT creates a new NFT instance
+func NewExtraBaseNFT(id string, owner sdk.AccAddress, tokenURI, digitalHash, denom string) *ExtraBaseNFT {
+	return &ExtraBaseNFT{
+		Denom: denom,
+		BaseNFT: BaseNFT{
+			ID:          id,
+			Owner:       owner,
+			TokenURI:    strings.TrimSpace(tokenURI),
+			DigitalHash: strings.TrimSpace(digitalHash),
+		},
+	}
+}
+
+// NFTLinkDenom define a link between nft id and his denom
+type NFTLinkDenom struct {
+	TokenID string `json:"token_id" yaml:"token_id"`
+	Denom   string `json:"denom" yaml:"denom"`
+}
 
 // NFTs define a list of NFT
 type NFTs []exported.NFT
