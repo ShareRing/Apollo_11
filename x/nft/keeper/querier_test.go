@@ -265,13 +265,15 @@ func TestQueryDenoms(t *testing.T) {
 	}
 }
 
-func TestQueryNFTByDigitalHash(t *testing.T) {
+func TestQueryNFTByDigitalHash(t *testing.T) { //todo
 	app, ctx := createTestApp(false)
 
 	// MintNFT shouldn't fail when collection does not exist
 	nft := types.NewBaseNFT(id, address, tokenURI1, digitalHash1)
 	err := app.NFTKeeper.MintNFT(ctx, denom, &nft)
 	require.NoError(t, err)
+
+	foundNFT := types.NewExtraBaseNFT(nft.GetID(), nft.GetOwner(), nft.GetTokenURI(), nft.GetDigitalHash(), denom)
 
 	querier := keep.NewQuerier(app.NFTKeeper)
 
@@ -283,7 +285,7 @@ func TestQueryNFTByDigitalHash(t *testing.T) {
 	var res []byte
 
 	// dont find by hash
-	params := types.NewQueryNFTsByDigitalHashParams([]string{denom}, digitalHash2)
+	params := types.NewQueryNFTsByDigitalHashParams(digitalHash2)
 	bz, err := app.Codec().MarshalJSON(params)
 	require.Nil(t, err)
 
@@ -291,24 +293,8 @@ func TestQueryNFTByDigitalHash(t *testing.T) {
 	res, err = querier(ctx, []string{"nftByDigitalHash"}, query)
 	require.Error(t, err)
 
-	// dont find by hash in all collection
-	params = types.NewQueryNFTsByDigitalHashParams([]string{}, digitalHash2)
-	bz, err = app.Codec().MarshalJSON(params)
-	require.Nil(t, err)
-
-	query.Data = bz
-	res, err = querier(ctx, []string{"nftByDigitalHash"}, query)
-	require.Error(t, err)
-	// dont find by collection
-	params =  types.NewQueryNFTsByDigitalHashParams([]string{denom2}, digitalHash1)
-	bz, err = app.Codec().MarshalJSON(params)
-	require.Nil(t, err)
-
-	query.Data = bz
-	res, err = querier(ctx, []string{"nftByDigitalHash"}, query)
-	require.Error(t, err)
-	// find by hash in all collection
-	params =  types.NewQueryNFTsByDigitalHashParams([]string{}, digitalHash1)
+	// find by hash
+	params = types.NewQueryNFTsByDigitalHashParams(digitalHash1)
 	bz, err = app.Codec().MarshalJSON(params)
 	require.Nil(t, err)
 
@@ -316,17 +302,8 @@ func TestQueryNFTByDigitalHash(t *testing.T) {
 	res, err = querier(ctx, []string{"nftByDigitalHash"}, query)
 	require.NoError(t, err)
 
-	// find by hash in selected collection
-	params = types.NewQueryNFTsByDigitalHashParams([]string{denom}, digitalHash1)
-	bz, err = app.Codec().MarshalJSON(params)
-	require.Nil(t, err)
-
-	query.Data = bz
-	res, err = querier(ctx, []string{"nftByDigitalHash"}, query)
-	require.NoError(t, err)
-
-	var out exported.NFT
+	var out types.ExtraBaseNFT
 	app.Codec().MustUnmarshalJSON(res, &out)
 
-	require.Equal(t, out.String(), nft.String())
+	require.Equal(t, out.String(), foundNFT.String())
 }

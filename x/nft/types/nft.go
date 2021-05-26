@@ -88,6 +88,20 @@ func NewExtraBaseNFT(id string, owner sdk.AccAddress, tokenURI, digitalHash, den
 	}
 }
 
+func (enft ExtraBaseNFT) String() string {
+	return fmt.Sprintf(`ID:				%s
+Owner:			%s
+Denom:			%s
+TokenURI:		%s
+DigitalHash:	%s`,
+		enft.ID,
+		enft.Owner,
+		enft.Denom,
+		enft.TokenURI,
+		enft.DigitalHash,
+	)
+}
+
 // NFTLinkDenom define a link between nft id and his denom
 type NFTLinkDenom struct {
 	TokenID string `json:"token_id" yaml:"token_id"`
