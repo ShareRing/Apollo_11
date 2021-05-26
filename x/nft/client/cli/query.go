@@ -71,13 +71,7 @@ $ %s query %s supply crypto-kitties
 				return err
 			}
 
-			var out exported.NFT
-			err = cdc.UnmarshalJSON(res, &out)
-			if err != nil {
-				return err
-			}
-
-			return cliCtx.PrintOutput(out)
+			return cliCtx.PrintOutput(string(res))
 		},
 	}
 }

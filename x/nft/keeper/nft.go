@@ -56,7 +56,10 @@ func (k Keeper) UpdateNFT(ctx sdk.Context, denom string, nft exported.NFT) (err 
 	if !found {
 		return sdkerrors.Wrap(types.ErrUnknownCollection, fmt.Sprintf("collection #%s doesn't exist", denom))
 	}
-	oldNFT, err := collection.GetNFT(nft.GetID())
+
+	tokenID := nft.GetID()
+
+	oldNFT, err := collection.GetNFT(tokenID)
 	if err != nil {
 		return err
 	}
@@ -68,6 +71,8 @@ func (k Keeper) UpdateNFT(ctx sdk.Context, denom string, nft exported.NFT) (err 
 		}
 	}
 
+
+
 	oldTokenURI := oldNFT.GetTokenURI()
 	tokenURI := nft.GetTokenURI()
 	if oldTokenURI != tokenURI {
@@ -75,6 +80,9 @@ func (k Keeper) UpdateNFT(ctx sdk.Context, denom string, nft exported.NFT) (err 
 		if err != nil {
 			return err
 		}
+
+		k.RemoveURIKVStoreValue(ctx, oldTokenURI)
+		k.SetURIKVstoreValue(ctx, tokenURI, tokenID, denom)
 	}
 
 	oldDigitalHash := oldNFT.GetDigitalHash()
@@ -84,6 +92,9 @@ func (k Keeper) UpdateNFT(ctx sdk.Context, denom string, nft exported.NFT) (err 
 		if err != nil {
 			return err
 		}
+
+		k.RemoveDigitalHashKVStoreValue(ctx, oldDigitalHash)
+		k.SetDigitalHashKVStoreValue(ctx, digitalHash, tokenID, denom)
 	}
 
 	collection, err = collection.UpdateNFT(nft)
@@ -92,8 +103,7 @@ func (k Keeper) UpdateNFT(ctx sdk.Context, denom string, nft exported.NFT) (err 
 		return err
 	}
 
-	k.RemoveURIKVStoreValue(ctx, oldTokenURI)
-	k.RemoveDigitalHashKVStoreValue(ctx, oldDigitalHash)
+
 	k.SetCollection(ctx, denom, collection)
 
 	return nil
