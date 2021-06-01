@@ -12,13 +12,13 @@ import (
 )
 
 const (
-	module             = "module"
-	denom              = "denom"
-	nftID              = "nft-id"
-	sender             = "sender"
-	recipient          = "recipient"
-	tokenURI           = "token-uri"
-	digitalHash        = "digital-hash"
+	module      = "module"
+	denom       = "denom"
+	nftID       = "nft-id"
+	sender      = "sender"
+	recipient   = "recipient"
+	tokenURI    = "token-uri"
+	digitalHash = "digital-hash"
 )
 
 func TestInvalidMsg(t *testing.T) {
@@ -33,7 +33,7 @@ func TestTransferNFTMsg(t *testing.T) {
 	h := nft.GenericHandler(app.NFTKeeper)
 
 	// An NFT to be transferred
-	nft := types.NewBaseNFT(id, address, "TokenURI", "digitalHash")
+	testNFT := types.NewBaseNFT(id, address, "TokenURI", "digitalHash")
 
 	// Define MsgTransferNft
 	transferNftMsg := types.NewMsgTransferNFT(address, address2, denom, id)
@@ -43,7 +43,7 @@ func TestTransferNFTMsg(t *testing.T) {
 	require.Error(t, err)
 
 	// Create token (collection and owner)
-	err = app.NFTKeeper.MintNFT(ctx, denom, &nft)
+	err = app.NFTKeeper.MintNFT(ctx, denom, &testNFT)
 	require.Nil(t, err)
 	require.True(t, CheckInvariants(app.NFTKeeper, ctx))
 
@@ -85,9 +85,15 @@ func TestTransferNFTMsg(t *testing.T) {
 	require.NoError(t, err)
 	require.True(t, CheckInvariants(app.NFTKeeper, ctx))
 
-	// Create token (collection and owner)
-	err = app.NFTKeeper.MintNFT(ctx, denom2, &nft)
-	require.Nil(t, err)
+	// Create token with same URI in another collection and check err (collection and owner)
+	err = app.NFTKeeper.MintNFT(ctx, denom2, &testNFT)
+	require.Error(t, err)
+
+	// Create another token
+	testNFT2 := types.NewBaseNFT(id, address, "TokenURI2", "digitalHash2")
+
+	err = app.NFTKeeper.MintNFT(ctx, denom2, &testNFT2)
+	require.NoError(t, err)
 	require.True(t, CheckInvariants(app.NFTKeeper, ctx))
 
 	transferNftMsg = types.NewMsgTransferNFT(address2, address3, denom2, id)
@@ -103,10 +109,10 @@ func TestEditNFTMetadataMsg(t *testing.T) {
 	h := nft.GenericHandler(app.NFTKeeper)
 
 	// An NFT to be edited
-	nft := types.NewBaseNFT(id, address, tokenURI, digitalHash)
+	testNFT := types.NewBaseNFT(id, address, tokenURI, digitalHash)
 
 	// Create token (collection and address)
-	err := app.NFTKeeper.MintNFT(ctx, denom, &nft)
+	err := app.NFTKeeper.MintNFT(ctx, denom, &testNFT)
 	require.Nil(t, err)
 
 	// Define MsgTransferNft
@@ -152,10 +158,10 @@ func TestEditNFTDigitalHashMsg(t *testing.T) {
 	h := nft.GenericHandler(app.NFTKeeper)
 
 	// An NFT to be edited
-	nft := types.NewBaseNFT(id, address, tokenURI, digitalHash)
+	testNFT := types.NewBaseNFT(id, address, tokenURI, digitalHash)
 
 	// Create token (collection and address)
-	err := app.NFTKeeper.MintNFT(ctx, denom, &nft)
+	err := app.NFTKeeper.MintNFT(ctx, denom, &testNFT)
 	require.Nil(t, err)
 
 	// Define MsgEditNFTDigitalHash
@@ -250,10 +256,10 @@ func TestBurnNFTMsg(t *testing.T) {
 	h := nft.GenericHandler(app.NFTKeeper)
 
 	// An NFT to be burned
-	nft := types.NewBaseNFT(id, address, tokenURI, digitalHash)
+	testNFT := types.NewBaseNFT(id, address, tokenURI, digitalHash)
 
 	// Create token (collection and address)
-	err := app.NFTKeeper.MintNFT(ctx, denom, &nft)
+	err := app.NFTKeeper.MintNFT(ctx, denom, &testNFT)
 	require.Nil(t, err)
 
 	exists := app.NFTKeeper.IsNFT(ctx, denom, id)
