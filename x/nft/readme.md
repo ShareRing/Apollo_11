@@ -84,10 +84,10 @@ path: "/nfts/transfer"
 struct in:  
 ```
 {
-	"base_req": rest.BaseReq
-	"denom": string
-	"id": string
-	"recipient": string
+	base_req: rest.BaseReq
+	denom: string
+	id: string
+	recipient: string
 }
 ```
 
@@ -100,10 +100,10 @@ path: "/nfts/collection/{denom}/nft/{id}/metadata"
 struct in:
 ```
 {
-	"base_req": rest.BaseReq
-	"denom": string
-	"id": string
-	"tokenURI": string
+	base_req: rest.BaseReq
+	denom: string
+	id: string
+	tokenURI: string
 }
 ```
 
@@ -116,10 +116,10 @@ path: "/nfts/collection/{denom}/nft/{id}/digitalhash"
 struct in:
 ```
 {
-	"base_req": rest.BaseReq
-	"denom": string
-	"id": string
-	"digital_hash": string
+	base_req: rest.BaseReq
+	denom: string
+	id: string
+	digital_hash: string
 }
 ```
 ##### MintNFT
